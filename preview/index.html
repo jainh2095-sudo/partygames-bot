@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PartyGames Bot Preview</title>
+    <style>
+      :root {
+        --bg: #15161f;
+        --panel: #1f2130;
+        --panel-2: #292c3e;
+        --line: #383c52;
+        --text: #f4f5fb;
+        --muted: #aeb4ca;
+        --purple: #9146ff;
+        --cyan: #14dcff;
+        --pink: #ff4cb4;
+        --green: #46e696;
+        --yellow: #ffbe50;
+        --red: #ff5578;
+        --discord: #5865f2;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: var(--bg);
+        color: var(--text);
+      }
+
+      button {
+        font: inherit;
+      }
+
+      .app {
+        min-height: 100vh;
+        display: grid;
+        grid-template-columns: 72px 238px minmax(0, 1fr) 290px;
+      }
+
+      .servers {
+        background: #101119;
+        padding: 14px 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .server-dot,
+      .server-home {
+        width: 48px;
+        height: 48px;
+        border-radius: 16px;
+        display: grid;
+        place-items: center;
+        font-weight: 800;
+      }
+
+      .server-home {
+        background: linear-gradient(135deg, var(--purple), var(--pink));
+      }
+
+      .server-dot {
+        background: var(--panel-2);
+        color: var(--muted);
+      }
+
+      .channels {
+        background: #191b27;
+        border-right: 1px solid #101119;
+        padding: 16px 12px;
+      }
+
+      .server-title {
+        font-size: 15px;
+        font-weight: 800;
+        padding: 8px 10px 18px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .channel-group {
+        margin-top: 18px;
+      }
+
+      .group-label {
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        margin: 0 10px 8px;
+      }
+
+      .channel {
+        width: 100%;
+        border: 0;
+        border-radius: 6px;
+        background: transparent;
+        color: var(--muted);
+        padding: 9px 10px;
+        text-align: left;
+        cursor: pointer;
+      }
+
+      .channel.active,
+      .channel:hover {
+        background: var(--panel-2);
+        color: var(--text);
+      }
+
+      .chat {
+        min-width: 0;
+        background: var(--panel);
+        display: grid;
+        grid-template-rows: 58px minmax(0, 1fr) auto;
+      }
+
+      .chat-header {
+        border-bottom: 1px solid var(--line);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 22px;
+      }
+
+      .chat-title {
+        font-size: 16px;
+        font-weight: 800;
+      }
+
+      .status {
+        color: var(--green);
+        font-size: 13px;
+      }
+
+      .messages {
+        overflow: auto;
+        padding: 24px;
+      }
+
+      .message {
+        display: grid;
+        grid-template-columns: 44px minmax(0, 1fr);
+        gap: 12px;
+        margin-bottom: 22px;
+      }
+
+      .avatar {
+        width: 44px;
+        height: 44px;
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(135deg, var(--cyan), var(--purple));
+        color: #111;
+        font-weight: 900;
+      }
+
+      .msg-name {
+        font-weight: 800;
+      }
+
+      .bot-tag {
+        margin-left: 6px;
+        padding: 2px 5px;
+        border-radius: 4px;
+        background: var(--discord);
+        color: white;
+        font-size: 10px;
+        font-weight: 800;
+      }
+
+      .msg-text {
+        color: var(--muted);
+        margin-top: 4px;
+      }
+
+      .embed {
+        width: min(680px, 100%);
+        margin-top: 10px;
+        border-left: 4px solid var(--cyan);
+        background: #242739;
+        border-radius: 8px;
+        padding: 16px;
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
+      }
+
+      .embed.pink {
+        border-left-color: var(--pink);
+      }
+
+      .embed.purple {
+        border-left-color: var(--purple);
+      }
+
+      .embed.green {
+        border-left-color: var(--green);
+      }
+
+      .embed-title {
+        font-size: 18px;
+        font-weight: 900;
+        margin-bottom: 10px;
+      }
+
+      .divider {
+        color: var(--cyan);
+        letter-spacing: 0.05em;
+        margin: 8px 0 12px;
+      }
+
+      .embed p {
+        margin: 8px 0;
+        color: var(--muted);
+        line-height: 1.45;
+      }
+
+      .quote {
+        border-left: 3px solid var(--line);
+        padding-left: 12px;
+        color: var(--text);
+      }
+
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 14px;
+      }
+
+      .btn {
+        border: 0;
+        border-radius: 6px;
+        padding: 9px 12px;
+        color: white;
+        background: var(--panel-2);
+        cursor: pointer;
+        font-weight: 750;
+      }
+
+      .btn.primary {
+        background: var(--discord);
+      }
+
+      .btn.success {
+        background: #248f61;
+      }
+
+      .btn.danger {
+        background: #c94361;
+      }
+
+      .btn:hover {
+        filter: brightness(1.08);
+      }
+
+      .composer {
+        margin: 0 24px 22px;
+        border-radius: 8px;
+        background: var(--panel-2);
+        color: var(--muted);
+        padding: 14px 16px;
+      }
+
+      .side {
+        background: #191b27;
+        border-left: 1px solid #101119;
+        padding: 18px;
+        overflow: auto;
+      }
+
+      .side h2 {
+        font-size: 16px;
+        margin: 0 0 12px;
+      }
+
+      .card {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 14px;
+        background: #202332;
+        margin-bottom: 12px;
+      }
+
+      .small {
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.4;
+      }
+
+      .grid-ttt {
+        display: grid;
+        grid-template-columns: repeat(3, 54px);
+        gap: 6px;
+        margin-top: 10px;
+      }
+
+      .cell {
+        width: 54px;
+        height: 54px;
+        border: 0;
+        border-radius: 6px;
+        background: #34384d;
+        color: white;
+        font-size: 24px;
+        font-weight: 900;
+        cursor: pointer;
+      }
+
+      .connect {
+        display: grid;
+        grid-template-columns: repeat(7, 30px);
+        gap: 5px;
+        margin-top: 12px;
+      }
+
+      .disc {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: #11131d;
+        border: 2px solid #3b4058;
+      }
+
+      .disc.red {
+        background: #ff5578;
+      }
+
+      .disc.yellow {
+        background: #ffbe50;
+      }
+
+      .progress {
+        height: 10px;
+        border-radius: 999px;
+        background: #151722;
+        overflow: hidden;
+        margin: 8px 0;
+      }
+
+      .progress span {
+        display: block;
+        height: 100%;
+        background: linear-gradient(90deg, var(--cyan), var(--pink));
+      }
+
+      @media (max-width: 960px) {
+        .app {
+          grid-template-columns: 64px minmax(0, 1fr);
+        }
+
+        .channels,
+        .side {
+          display: none;
+        }
+      }
+
+      @media (max-width: 620px) {
+        .messages {
+          padding: 16px;
+        }
+
+        .chat-header {
+          padding: 0 16px;
+        }
+
+        .embed-title {
+          font-size: 16px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="app">
+      <aside class="servers">
+        <div class="server-home">PG</div>
+        <div class="server-dot">VA</div>
+        <div class="server-dot">CP</div>
+      </aside>
+
+      <aside class="channels">
+        <div class="server-title">VibeArena Server</div>
+        <div class="channel-group">
+          <div class="group-label">PARTY GAMES</div>
+          <button class="channel active" data-view="truth"># truth-or-dare</button>
+          <button class="channel" data-view="tictactoe"># tic-tac-toe</button>
+          <button class="channel" data-view="connect4"># connect-4</button>
+          <button class="channel" data-view="economy"># profiles-shop</button>
+          <button class="channel" data-view="setup"># server-setup</button>
+        </div>
+      </aside>
+
+      <section class="chat">
+        <header class="chat-header">
+          <div class="chat-title" id="channelTitle"># truth-or-dare</div>
+          <div class="status">● PartyGames Bot online</div>
+        </header>
+
+        <div class="messages" id="messages"></div>
+
+        <div class="composer">Try commands like /tod start, /tictactoe, /connect4, /daily, /setup</div>
+      </section>
+
+      <aside class="side">
+        <h2>Live Preview</h2>
+        <div class="card">
+          <strong>Bot style</strong>
+          <p class="small">Rich embeds, buttons, modals, game boards, Vibe Coins, and server-safe prompts.</p>
+        </div>
+        <div class="card">
+          <strong>Safety</strong>
+          <p class="small">Profanity filtering, report buttons, cooldowns, and mod-only game bans.</p>
+        </div>
+        <div class="card">
+          <strong>Server access</strong>
+          <p class="small">Owners can use /invite and /setup after hosting the bot.</p>
+        </div>
+      </aside>
+    </main>
+
+    <script>
+      const messages = document.querySelector("#messages");
+      const title = document.querySelector("#channelTitle");
+      const channels = document.querySelectorAll(".channel");
+
+      const truthPrompts = [
+        "What song instantly puts you in a good mood?",
+        "What food from your country should everyone try once?",
+        "What is a small goal you are proud of keeping alive?"
+      ];
+
+      const darePrompts = [
+        "Describe your day using only movie titles.",
+        "Teach everyone a friendly phrase from another language.",
+        "Make a dramatic weather report for the current chat vibe."
+      ];
+
+      function botMessage(embedHtml, text = "PartyGames Bot used an app command") {
+        return `
+          <article class="message">
+            <div class="avatar">PG</div>
+            <div>
+              <div><span class="msg-name">PartyGames Bot</span><span class="bot-tag">BOT</span></div>
+              <div class="msg-text">${text}</div>
+              ${embedHtml}
+            </div>
+          </article>
+        `;
+      }
+
+      function truthView(prompt = truthPrompts[0], player = "Mira") {
+        return botMessage(`
+          <div class="embed pink">
+            <div class="embed-title">🎭 Truth or Dare</div>
+            <div class="divider">━━━━━━━━━━━━━━━━━━━━</div>
+            <p><strong>Spin the bottle session</strong></p>
+            <p>Round <strong>2/5</strong><br />Bottle landed on: <strong>@${player}</strong><br />Category: <strong>International</strong></p>
+            <p class="quote"><strong>Truth for @${player}:</strong><br />${prompt}</p>
+            <div class="controls">
+              <button class="btn" onclick="spinBottle()">🍾 Spin Bottle</button>
+              <button class="btn primary" onclick="newTruth()">💬 Truth</button>
+              <button class="btn success" onclick="newDare()">⚡ Dare</button>
+              <button class="btn primary" onclick="customPrompt()">✍️ Custom Truth</button>
+              <button class="btn success" onclick="customPrompt()">🎲 Custom Dare</button>
+              <button class="btn danger">🛡️ Report</button>
+            </div>
+          </div>
+        `);
+      }
+
+      function tttView() {
+        return botMessage(`
+          <div class="embed">
+            <div class="embed-title">⭕ Tic Tac Toe ❌</div>
+            <div class="divider">━━━━━━━━━━━━━━━━━━━━</div>
+            <p><strong>Classic 3x3 showdown</strong></p>
+            <p>@Ava <code>X</code> vs <strong>PartyGames AI</strong> <code>O</code></p>
+            <div class="grid-ttt">
+              <button class="cell">X</button><button class="cell">O</button><button class="cell"></button>
+              <button class="cell"></button><button class="cell">X</button><button class="cell"></button>
+              <button class="cell">O</button><button class="cell"></button><button class="cell">X</button>
+            </div>
+            <p>Score: <code>X 1</code> • <code>O 0</code> • Best of <strong>3</strong></p>
+            <div class="controls"><button class="btn success">🔁 Rematch</button></div>
+          </div>
+        `);
+      }
+
+      function connectView() {
+        const cells = Array.from({ length: 42 }, (_, index) => {
+          const cls = [38, 39, 40, 33].includes(index) ? "red" : [41, 34, 27].includes(index) ? "yellow" : "";
+          return `<div class="disc ${cls}"></div>`;
+        }).join("");
+        return botMessage(`
+          <div class="embed">
+            <div class="embed-title">🔴 Connect 4 🟡</div>
+            <div class="divider">━━━━━━━━━━━━━━━━━━━━</div>
+            <p><strong>Drop pieces, connect four</strong></p>
+            <p>@Noah 🔴 vs @Lina 🟡</p>
+            <div class="connect">${cells}</div>
+            <p>Turn: <strong>@Lina</strong> 🟡</p>
+            <div class="controls">
+              <button class="btn primary">1</button><button class="btn primary">2</button><button class="btn primary">3</button>
+              <button class="btn primary">4</button><button class="btn primary">5</button><button class="btn primary">6</button><button class="btn primary">7</button>
+            </div>
+          </div>
+        `);
+      }
+
+      function economyView() {
+        return botMessage(`
+          <div class="embed purple">
+            <div class="embed-title">🌈 Riya's profile</div>
+            <div class="divider">━━━━━━━━━━━━━━━━━━━━</div>
+            <p><strong>Certified Vibe Strategist</strong></p>
+            <div class="progress"><span style="width: 64%"></span></div>
+            <p><code>64/100 XP</code></p>
+            <p><strong>Wallet</strong><br />────── <code>coins</code> <strong>3,420 🪩</strong><br />────── <code>level</code> <strong>7</strong></p>
+            <p><strong>Arena Stats</strong><br />────── <code>wins</code> <strong>18</strong><br />────── <code>played</code> <strong>31</strong></p>
+          </div>
+        `) + botMessage(`
+          <div class="embed green">
+            <div class="embed-title">🛍️ Vibe Shop</div>
+            <p><strong>Cosmetics, boosts, and server-safe flexes</strong></p>
+            <p><code>title</code> • <strong>1,200 🪩</strong><br />Sets your profile title to Certified Vibe Strategist.</p>
+            <p><code>badge</code> • <strong>5,000 🪩</strong><br />Adds a collectible profile badge.</p>
+          </div>
+        `);
+      }
+
+      function setupView() {
+        return botMessage(`
+          <div class="embed purple">
+            <div class="embed-title">🛠️ PartyGames Setup Checklist</div>
+            <div class="divider">━━━━━━━━━━━━━━━━━━━━</div>
+            <p><strong>Permissions</strong><br />View Channels, Send Messages, Embed Links, Read Message History, Create Private Threads, Manage Threads.</p>
+            <p><strong>First commands</strong><br /><code>/tod start</code> <code>/tictactoe</code> <code>/connect4</code> <code>/daily</code></p>
+            <p><strong>Invite</strong><br />Use <code>/invite</code> to share the bot with another server.</p>
+          </div>
+        `);
+      }
+
+      function render(view) {
+        const map = {
+          truth: truthView(),
+          tictactoe: tttView(),
+          connect4: connectView(),
+          economy: economyView(),
+          setup: setupView()
+        };
+        messages.innerHTML = map[view];
+        title.textContent = "# " + (view === "tictactoe" ? "tic-tac-toe" : view === "connect4" ? "connect-4" : view === "economy" ? "profiles-shop" : view === "setup" ? "server-setup" : "truth-or-dare");
+      }
+
+      function spinBottle() {
+        const players = ["Mira", "Noah", "Riya", "Ava", "Lina"];
+        const player = players[Math.floor(Math.random() * players.length)];
+        messages.innerHTML = truthView("The bottle is ready. Pick Truth, Dare, or write a custom prompt.", player);
+      }
+
+      function newTruth() {
+        messages.innerHTML = truthView(truthPrompts[Math.floor(Math.random() * truthPrompts.length)]);
+      }
+
+      function newDare() {
+        messages.innerHTML = truthView(darePrompts[Math.floor(Math.random() * darePrompts.length)]);
+      }
+
+      function customPrompt() {
+        messages.innerHTML = truthView("Custom prompt preview: What is one wholesome challenge you want the group to try?");
+      }
+
+      channels.forEach((button) => {
+        button.addEventListener("click", () => {
+          channels.forEach((item) => item.classList.remove("active"));
+          button.classList.add("active");
+          render(button.dataset.view);
+        });
+      });
+
+      render("truth");
+    </script>
+  </body>
+</html>

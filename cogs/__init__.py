@@ -1,0 +1,1 @@
+"""PartyGames bot cogs."""
